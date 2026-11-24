@@ -183,12 +183,16 @@ export default function BatchInvoiceForm({ onSuccess }: BatchInvoiceFormProps) {
 
     try {
       const rawResults = await submitInvoicesBatch(address!, currentRows, signTx);
+      const batchSummary = Array.isArray(rawResults)
+        ? undefined
+        : (rawResults as unknown as { successful?: number });
       const results = Array.isArray(rawResults)
         ? rawResults
         : currentRows.map((row, index) => ({
             id: row.id,
-            success: index < (rawResults?.successful ?? 0),
-            error: index >= (rawResults?.successful ?? 0) ? 'Invoice was not submitted' : undefined,
+            success: index < (batchSummary?.successful ?? 0),
+            error:
+              index >= (batchSummary?.successful ?? 0) ? 'Invoice was not submitted' : undefined,
           }));
       setSubmissionResults(results);
 
